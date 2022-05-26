@@ -41,8 +41,6 @@ github.com/googleapis/gax-go/v2/apierror
 github.com/googleapis/gax-go/v2/apierror/internal/proto
 # github.com/googleapis/go-type-adapters v1.0.0
 github.com/googleapis/go-type-adapters/adapters
-# github.com/jackc/pgtype v1.11.0
-## explicit
 # github.com/jinzhu/gorm v1.9.16
 ## explicit
 github.com/jinzhu/gorm
@@ -89,6 +87,8 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
+# golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+## explicit
 # golang.org/x/net v0.0.0-20220325170049-de3da57026de
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp

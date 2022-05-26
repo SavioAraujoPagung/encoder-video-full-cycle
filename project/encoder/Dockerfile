@@ -5,18 +5,17 @@ ENV PATH="$PATH:/bin/bash" \
 
 # FFMPEG
 RUN apk add --update ffmpeg bash curl make
-
 # Install Bento
+RUN mkdir /tmp/bento4
 WORKDIR /tmp/bento4
-
 ENV BENTO4_BASE_URL="http://zebulon.bok.net/Bento4/source/" \
     BENTO4_VERSION="1-5-0-615" \
     BENTO4_CHECKSUM="5378dbb374343bc274981d6e2ef93bce0851bda1" \
     BENTO4_TARGET="" \
     BENTO4_PATH="/opt/bento4" \
     BENTO4_TYPE="SRC"
-    # download and unzip bento4
 
+    # download and unzip bento4
 RUN apk add --update --upgrade curl python unzip bash gcc g++ scons && \
     curl -O -s ${BENTO4_BASE_URL}/Bento4-${BENTO4_TYPE}-${BENTO4_VERSION}${BENTO4_TARGET}.zip && \
     sha1sum -b Bento4-${BENTO4_TYPE}-${BENTO4_VERSION}${BENTO4_TARGET}.zip | grep -o "^$BENTO4_CHECKSUM " && \

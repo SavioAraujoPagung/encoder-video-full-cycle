@@ -29,6 +29,7 @@ func prepare() (*domain.Video, *repositories.VideoRepositoryDb) {
 	video.ID = uuid.NewV4().String()
 	video.FilePath = "neymito.mp4"
 	video.CreatedAt = time.Now()
+
 	repo := &repositories.VideoRepositoryDb{
 		Db: db,
 	}
@@ -36,12 +37,19 @@ func prepare() (*domain.Video, *repositories.VideoRepositoryDb) {
 	return video, repo
 }
 
-func TestVideoDownloand(t *testing.T){
+func TestVideoDownloand(t *testing.T) {
 	video, repo := prepare()
-	
+
 	videoService := services.NewVideoService()
 	videoService.Video = video
 	videoService.VideoRepository = repo
 	err := videoService.Download("full-cycle-encoder")
 	require.Nil(t, err)
+
+	err = videoService.Fragment()
+	require.Nil(t, err)
+
+	err = videoService.Encode()
+	require.Nil(t, err)
+
 }
