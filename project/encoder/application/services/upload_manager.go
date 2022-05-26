@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
+	"github.com/sirupsen/logrus"
 )
 
 type VideoUpload struct {
@@ -17,6 +18,11 @@ type VideoUpload struct {
 	OutputBucket string
 	Erros        []string
 }
+
+const (
+	MsgUploadCompleted = "upload completed"
+	msgErr = "error during the upload: %d. error: %v"
+)
 
 func NewVideoUpload() *VideoUpload {
 	return &VideoUpload{}
@@ -58,7 +64,7 @@ func (vu *VideoUpload) loadPaths() error {
 }
 
 func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan string) error {
-	in  := make(chan int, runtime.NumCPU())
+	in  := make(chan int, runtime.NumCPU()) 
 	returnChannel := make(chan string)
 
 	if err := vu.loadPaths(); err != nil { return err }
@@ -76,14 +82,33 @@ func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan string) er
 		for x := 0; x < len(vu.Paths); x++ {
 			in <- x
 		}
+		close(in)
 	}()
+
+	for r := range returnChannel {
+		if r != "" {
+			doneUpload <- r
+			break
+		}
+	}
+
 	return nil
 }
 
 func (vu *VideoUpload) uploadWorker(in chan int, returnChan chan string, uploadClient *storage.Client, ctx context.Context) {
 	for x := range in {
+		err := vu.UploadObject(vu.Paths[x], uploadClient, ctx)
 		
+		if err != nil {
+			vu.Erros = append(vu.Erros, vu.Paths[x])
+			logrus.Printf(msgErr, vu.Paths[x], err)
+			returnChan <- err.Error()
+		}
+
+		returnChan <- ""
 	}
+
+	returnChan <- MsgUploadCompleted
 }
 
 func getClientUpload() (*storage.Client, context.Context, error) {
