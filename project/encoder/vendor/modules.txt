@@ -65,6 +65,9 @@ github.com/satori/go.uuid
 # github.com/sirupsen/logrus v1.8.1
 ## explicit
 github.com/sirupsen/logrus
+# github.com/streadway/amqp v1.0.0
+## explicit
+github.com/streadway/amqp
 # github.com/stretchr/testify v1.7.0
 ## explicit
 github.com/stretchr/testify/assert
