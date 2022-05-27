@@ -118,6 +118,14 @@ func (v *VideoService) Finish() error {
 	return nil
 }
 
+func (v *VideoService) InsertVideo() error {
+	if _, err := v.VideoRepository.Insert(v.Video); err != nil {
+		return err
+	}
+	
+	return nil
+}
+
 func printOutput(out []byte) {
 	if len(out) > 0 {
 		logrus.Printf("Output: %s\n", string(out))

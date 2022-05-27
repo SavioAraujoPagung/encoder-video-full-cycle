@@ -12,6 +12,7 @@ func init() {
 }
 
 const (
+	StatusStart       = "STARTING"
 	StatusFaild       = "FAILED"
 	StatusDownloading = "DOWNLOADING"
 	StatusFragmenting = "FRAGMENTING"
