@@ -17,3 +17,14 @@ func TestIsJson(t *testing.T) {
 	err := utils.IsJson(json)
 	require.Nil(t, err)
 }
+
+func TestNotJson(t *testing.T) {
+	json := `{
+		"id": "123",
+		"nome": "teste",
+		"idade": "20",
+	}`
+
+	err := utils.IsJson(json)
+	require.Error(t, err)
+}
