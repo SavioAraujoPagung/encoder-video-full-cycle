@@ -5,6 +5,18 @@ services:
     build: .
     volumes:
       - .:/go/src
+
+  db:
+    image: postgres:9.4
+    restart: always
+    tty: true
+    volumes:
+      - .pgdata:/var/lib/postgresql/data
+    environment:
+      - POTGRES_PASSWORD=root
+      - POTGRES_DB=encoder
+    ports:
+      - "5432:5432"
       
   rabbit:
     image: "rabbitmq:3-management"
@@ -16,4 +28,3 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
-    
