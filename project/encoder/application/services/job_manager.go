@@ -66,18 +66,18 @@ func (jm *JobManager) Start(ch *amqp.Channel) {
 		}
 
 		if err != nil {
-			jobResult.Message.Reject("false")
+			jobResult.Message.Reject(false)
 		}
 	}
 }
 
-func (jm *JobManager) checkParceErrors(jobResult JobWorkerResult) error{
+func (jm *JobManager) checkParceErrors(jobResult JobWorkerResult) error {
 	if jobResult.Job.ID != "" {
 		logrus.Printf("messageID:", jobResult.Message.DeliveryTag, ". error parsing job:", jobResult.Job.ID)
 	} else {
 		logrus.Printf("messageID:", jobResult.Message.DeliveryTag, ". error parsing message:", jobResult.Error)
 	}
-/*
+	
 	//falta implementar a notificação
 	errMsg := JobNotificationError{
 		Message: string(jobResult.Message.Body),
@@ -85,9 +85,53 @@ func (jm *JobManager) checkParceErrors(jobResult JobWorkerResult) error{
 	}
 
 	jobJson, err := json.Marshal(errMsg)
-	
-*/
+	if err != nil {
+		return err
+	}
+
+	err = jm.notify(jobJson)
+	if err != nil {
+		return err
+	}
+
+	err = jobResult.Message.Reject(false)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func 
+func (jm *JobManager) notifySuccess(jobResult JobWorkerResult, ch *amqp.Channel) error {
+	jobJson, err := json.Marshal(jobResult)
+	if err != nil {
+		return err
+	}
+
+	err = jm.notify(jobJson)
+	if err != nil {
+		return err
+	}
+
+	err = jobResult.Message.Ack(false)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (jm *JobManager) notify(jobJson []byte) error{
+	err := jm.RabbitMQ.Notify(
+		string(jobJson),
+		"application/json",
+		os.Getenv("RABBITMQ_NOTFICATION_EX"),
+		os.Getenv("RABBITMQ_NOTFICATION_ROUTING_KEY"),
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
